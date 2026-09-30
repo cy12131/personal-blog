@@ -13,9 +13,11 @@ interface Props {
 	image?: ImageMetadata;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-
 const { title, description, image = FallbackImage } = Astro.props;
+const pageTitle = title === SITE_TITLE ? SITE_TITLE : `${title} | ${SITE_TITLE}`;
+const canonicalURL = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+const rssURL = Astro.site ? new URL('rss.xml', Astro.site) : '/rss.xml';
+const socialImageURL = Astro.site ? new URL(image.src, Astro.site) : image.src;
 ---
 
 <!-- Global Metadata -->
@@ -23,30 +25,29 @@ const { title, description, image = FallbackImage } = Astro.props;
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
-<link rel="sitemap" href="/sitemap-index.xml" />
 <link
 	rel="alternate"
 	type="application/rss+xml"
 	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
+	href={rssURL}
 />
 <meta name="generator" content={Astro.generator} />
 
 <Font cssVariable="--font-atkinson" preload />
 
-<!-- Canonical URL -->
-<link rel="canonical" href={canonicalURL} />
+<!-- A canonical URL can be added after the production domain is configured. -->
+{canonicalURL && <link rel="canonical" href={canonicalURL} />}
 
 <!-- Primary Meta Tags -->
-<title>{title}</title>
+<title>{pageTitle}</title>
 <meta name="description" content={description} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
-<meta property="og:url" content={Astro.url} />
-<meta property="og:title" content={title} />
+{canonicalURL && <meta property="og:url" content={canonicalURL} />}
+<meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={new URL(image.src, Astro.url)} />
+<meta property="og:image" content={socialImageURL} />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />

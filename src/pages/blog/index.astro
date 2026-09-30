@@ -1,87 +1,98 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { SITE_DESCRIPTION } from '../../consts';
 
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft)).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title="文章" description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				width: 960px;
+				width: 760px;
 			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
+			.page-header {
+				margin-bottom: 2.5rem;
 			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
+			.page-header h1 {
 				margin-bottom: 0.5rem;
-				border-radius: 12px;
 			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
+			.page-header p {
 				margin: 0;
 				color: rgb(var(--gray));
 			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
+			.post-list {
+				margin: 0;
+				padding: 0;
+				list-style: none;
 			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
+			.post-item {
+				margin-bottom: 2rem;
+				padding-bottom: 2rem;
+				border-bottom: 1px solid rgb(var(--gray-light));
+			}
+			.post-item:last-child {
+				margin-bottom: 0;
+				border-bottom: 0;
+			}
+			.post-title {
+				margin-bottom: 0.5rem;
+				font-size: 1.7rem;
+			}
+			.post-title a {
+				color: rgb(var(--black));
+				text-decoration: none;
+			}
+			.post-title a:hover {
+				color: var(--accent);
+			}
+			.post-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+				align-items: center;
+				margin: 0;
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+			}
+			.category {
+				color: var(--accent-dark);
+				font-weight: 700;
+			}
+			.description {
+				margin: 0.9rem 0;
+				color: rgb(var(--gray-dark));
+			}
+			.tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.65rem;
+			}
+			.tag {
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
 			}
 			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
+				.page-header {
+					margin-bottom: 2rem;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
+				.page-header h1 {
+					font-size: 2.35rem;
 				}
-				ul li:first-child {
-					margin-bottom: 0;
+				.post-title {
+					font-size: 1.45rem;
 				}
-				ul li:first-child .title {
-					font-size: 1.563em;
+				.post-item {
+					margin-bottom: 1.5rem;
+					padding-bottom: 1.5rem;
 				}
 			}
 		</style>
@@ -89,25 +100,34 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
+			<header class="page-header">
+				<h1>文章</h1>
+				<p>记录学习过程、项目实践与技术总结。</p>
+			</header>
+			<ul class="post-list">
+				{
+					posts.map((post) => (
+						<li class="post-item">
+							<article>
+								<h2 class="post-title">
+									<a href={`/blog/${post.data.slug}/`}>{post.data.title}</a>
+								</h2>
+								<p class="post-meta">
+									<FormattedDate date={post.data.pubDate} />
+									<span aria-hidden="true">·</span>
+									<span class="category">{post.data.category}</span>
+								</p>
+								<p class="description">{post.data.description}</p>
+								{post.data.tags.length > 0 && (
+									<div class="tags" aria-label="文章标签">
+										{post.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+									</div>
+								)}
+							</article>
+						</li>
+					))
+				}
+			</ul>
 		</main>
 		<Footer />
 	</body>

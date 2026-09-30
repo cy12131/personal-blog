@@ -1,0 +1,136 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { projects } from '../data/projects';
+
+const description = '记录服务器开发、网络编程以及其他工程项目实践。';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="项目" description={description} />
+		<style>
+			main {
+				width: 860px;
+			}
+			.page-header {
+				margin-bottom: 2.5rem;
+			}
+			.page-header h1 {
+				margin-bottom: 0.5rem;
+			}
+			.page-header p {
+				margin: 0;
+				color: rgb(var(--gray));
+			}
+			.project-list {
+				display: grid;
+				gap: 1.5rem;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			.project-card {
+				padding: 1.5rem;
+				border: 1px solid rgb(var(--gray-light));
+				border-radius: 12px;
+				background: rgba(255, 255, 255, 0.72);
+			}
+			.project-card h2 {
+				margin-bottom: 0.4rem;
+				font-size: 1.7rem;
+			}
+			.summary {
+				margin: 0 0 1rem;
+				color: rgb(var(--gray-dark));
+			}
+			.project-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				align-items: center;
+				margin-bottom: 1.25rem;
+			}
+			.status,
+			.technology {
+				display: inline-flex;
+				align-items: center;
+				padding: 0.2rem 0.65rem;
+				border-radius: 999px;
+				font-size: 0.85rem;
+			}
+			.status {
+				background: var(--accent);
+				color: white;
+				font-weight: 700;
+			}
+			.technology {
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+			}
+			.project-card h3 {
+				margin-top: 1.2rem;
+				font-size: 1.05rem;
+			}
+			.project-card p,
+			.project-card ul {
+				margin-top: 0.4rem;
+				margin-bottom: 0;
+			}
+			.project-card li {
+				margin-bottom: 0.35rem;
+			}
+			@media (max-width: 720px) {
+				.page-header {
+					margin-bottom: 2rem;
+				}
+				.page-header h1 {
+					font-size: 2.35rem;
+				}
+				.project-card {
+					padding: 1.1rem;
+				}
+				.project-card h2 {
+					font-size: 1.45rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<header class="page-header">
+				<h1>项目</h1>
+				<p>这里记录我的主要项目实践，包括服务器开发、网络编程以及其他工程项目。</p>
+			</header>
+
+			<ul class="project-list">
+				{
+					projects.map((project) => (
+						<li>
+							<article class="project-card">
+								<h2>{project.name}</h2>
+								<p class="summary">{project.summary}</p>
+								<div class="project-meta">
+									<span class="status">{project.status}</span>
+									{project.technologies.map((technology) => (
+										<span class="technology">{technology}</span>
+									))}
+								</div>
+								<h3>负责内容</h3>
+								<p>{project.role}</p>
+								<h3>主要内容</h3>
+								<ul>
+									{project.details.map((detail) => <li>{detail}</li>)}
+								</ul>
+							</article>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>
