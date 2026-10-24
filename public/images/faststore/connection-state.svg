@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">FastStore Connection 状态机</title>
+  <desc id="desc">Connection 从读取请求头分流到上传或 Worker 路径，随后写响应、流式发送文件并完成。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker>
+    <style>.node{fill:#fff;stroke:#334155;stroke-width:2;rx:12}.read{fill:#e0f2fe;stroke:#0369a1}.wait{fill:#fef3c7;stroke:#a16207}.write{fill:#dcfce7;stroke:#15803d}.error{fill:#fee2e2;stroke:#b91c1c}.t{font:600 18px system-ui,sans-serif;fill:#0f172a;text-anchor:middle}.s{font:14px system-ui,sans-serif;fill:#475569;text-anchor:middle}.a{fill:none;stroke:#475569;stroke-width:2.3;marker-end:url(#arrow)}.caption{font:700 28px system-ui,sans-serif;fill:#0f172a}</style>
+  </defs>
+  <rect width="1200" height="700" fill="#f8fafc" rx="18"/>
+  <text x="50" y="52" class="caption">Connection：下一次事件应该从哪里继续</text>
+  <circle cx="85" cy="150" r="10" fill="#0f172a"/>
+  <rect x="140" y="115" width="230" height="70" class="node read"/><text x="255" y="145" class="t">ReadingHeaders</text><text x="255" y="169" class="s">incremental parser</text>
+  <path d="M95 150 H140" class="a"/>
+  <rect x="475" y="95" width="230" height="70" class="node read"/><text x="590" y="125" class="t">ReceivingBody</text><text x="590" y="149" class="s">Streaming PUT</text>
+  <path d="M370 135 H475" class="a"/><text x="423" y="120" class="s">PUT</text>
+  <rect x="475" y="235" width="230" height="70" class="node wait"/><text x="590" y="265" class="t">RequestReady</text><text x="590" y="289" class="s">non-PUT</text>
+  <path d="M330 185 C365 235 415 270 475 270" class="a"/>
+  <rect x="810" y="235" width="240" height="70" class="node wait"/><text x="930" y="265" class="t">WaitingForWorker</text><text x="930" y="289" class="s">no socket mutation</text>
+  <path d="M705 270 H810" class="a"/>
+  <rect x="810" y="95" width="240" height="70" class="node write"/><text x="930" y="125" class="t">WritingResponse</text><text x="930" y="149" class="s">headers / small body</text>
+  <path d="M705 130 H810" class="a"/><path d="M930 235 V165" class="a"/>
+  <rect x="810" y="390" width="240" height="70" class="node write"/><text x="930" y="420" class="t">WritingFileBody</text><text x="930" y="444" class="s">64 KiB chunk + offsets</text>
+  <path d="M970 165 C1040 220 1040 330 970 390" class="a"/>
+  <rect x="475" y="520" width="230" height="70" class="node write"/><text x="590" y="550" class="t">ResponseComplete</text><text x="590" y="574" class="s">close connection</text>
+  <path d="M900 460 C840 520 775 555 705 555" class="a"/><path d="M810 145 C700 175 650 440 625 520" class="a"/>
+  <circle cx="365" cy="555" r="13" fill="none" stroke="#0f172a" stroke-width="2"/><circle cx="365" cy="555" r="7" fill="#0f172a"/><path d="M475 555 H378" class="a"/>
+  <rect x="140" y="390" width="230" height="70" class="node error"/><text x="255" y="420" class="t">Error</text><text x="255" y="444" class="s">cleanup and close</text>
+  <path d="M255 185 V390" class="a"/><path d="M475 145 C410 190 390 350 370 410" class="a"/>
+</svg>

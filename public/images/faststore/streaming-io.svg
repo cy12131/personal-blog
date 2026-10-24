@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650" role="img" aria-labelledby="title desc">
+  <title id="title">FastStore Streaming PUT 与 GET</title>
+  <desc id="desc">PUT 使用临时文件分块写入并提交，GET 使用 64 KiB 文件块和发送偏移处理 partial send 与 EAGAIN。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker>
+    <style>.node{fill:#fff;stroke:#475569;stroke-width:2;rx:10}.put{fill:#e0f2fe;stroke:#0369a1}.get{fill:#dcfce7;stroke:#15803d}.pause{fill:#fef3c7;stroke:#a16207}.t{font:600 17px system-ui,sans-serif;fill:#0f172a;text-anchor:middle}.s{font:14px system-ui,sans-serif;fill:#475569;text-anchor:middle}.a{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.dash{fill:none;stroke:#a16207;stroke-width:2.2;stroke-dasharray:7 6;marker-end:url(#arrow)}.h{font:700 25px system-ui,sans-serif;fill:#0f172a}.caption{font:700 28px system-ui,sans-serif;fill:#0f172a}</style>
+  </defs>
+  <rect width="1200" height="650" fill="#f8fafc" rx="18"/>
+  <text x="50" y="50" class="caption">Streaming I/O：保存执行进度，而不是缓存整个文件</text>
+  <line x1="600" y1="85" x2="600" y2="600" stroke="#cbd5e1" stroke-width="2"/>
+  <text x="70" y="105" class="h">PUT</text><text x="670" y="105" class="h">GET</text>
+  <rect x="70" y="135" width="200" height="62" class="node put"/><text x="170" y="173" class="t">Parse header</text>
+  <rect x="340" y="135" width="200" height="62" class="node put"/><text x="440" y="161" class="t">Content-Length</text><text x="440" y="183" class="s">maximum 1 GiB</text>
+  <path d="M270 166 H340" class="a"/>
+  <rect x="340" y="260" width="200" height="62" class="node put"/><text x="440" y="286" class="t">Temporary file</text><text x="440" y="308" class="s">no visible half-file</text>
+  <path d="M440 197 V260" class="a"/>
+  <rect x="70" y="260" width="200" height="62" class="node put"/><text x="170" y="286" class="t">Write body chunk</text><text x="170" y="308" class="s">bounded input buffer</text>
+  <path d="M340 291 H270" class="a"/><path d="M170 322 V390 H440 V322" class="dash"/>
+  <rect x="340" y="420" width="200" height="62" class="node put"/><text x="440" y="446" class="t">Complete + rename</text><text x="440" y="468" class="s">201 Created</text>
+  <path d="M440 322 V420" class="a"/>
+  <rect x="670" y="135" width="200" height="62" class="node get"/><text x="770" y="161" class="t">Response header</text><text x="770" y="183" class="s">fixed Content-Length</text>
+  <rect x="940" y="135" width="200" height="62" class="node get"/><text x="1040" y="161" class="t">Read file chunk</text><text x="1040" y="183" class="s">64 KiB</text>
+  <path d="M870 166 H940" class="a"/>
+  <rect x="940" y="260" width="200" height="62" class="node get"/><text x="1040" y="286" class="t">send remaining</text><text x="1040" y="308" class="s">advance offsets</text>
+  <path d="M1040 197 V260" class="a"/>
+  <rect x="670" y="260" width="200" height="62" class="node pause"/><text x="770" y="286" class="t">EAGAIN</text><text x="770" y="308" class="s">wait EPOLLOUT</text>
+  <path d="M940 291 H870" class="dash"/><path d="M770 322 V390 H1040 V322" class="dash"/>
+  <rect x="940" y="420" width="200" height="62" class="node get"/><text x="1040" y="446" class="t">Expected bytes sent</text><text x="1040" y="468" class="s">close ReadFile</text>
+  <path d="M1040 322 V420" class="a"/>
+  <text x="300" y="570" class="s">received bytes + temporary-file state</text>
+  <text x="900" y="570" class="s">response offset + chunk offset + sent bytes</text>
+</svg>

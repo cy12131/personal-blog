@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430" role="img" aria-labelledby="title desc">
+  <title id="title">FastStore Worker completion 流程</title>
+  <desc id="desc">Worker 将结果放入完成队列并写 eventfd，Reactor 被唤醒后验证 fd、connection id 和状态再应用结果。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker>
+    <style>.node{fill:#fff;stroke:#475569;stroke-width:2;rx:12}.worker{fill:#fef3c7;stroke:#a16207}.reactor{fill:#e0f2fe;stroke:#0369a1}.valid{fill:#dcfce7;stroke:#15803d}.t{font:600 18px system-ui,sans-serif;fill:#0f172a;text-anchor:middle}.s{font:14px system-ui,sans-serif;fill:#475569;text-anchor:middle}.a{fill:none;stroke:#475569;stroke-width:2.4;marker-end:url(#arrow)}.caption{font:700 28px system-ui,sans-serif;fill:#0f172a}</style>
+  </defs>
+  <rect width="1200" height="430" fill="#f8fafc" rx="18"/>
+  <text x="50" y="52" class="caption">Worker 只产生结果，Reactor 应用可变状态</text>
+  <rect x="50" y="135" width="170" height="76" class="node worker"/><text x="135" y="166" class="t">Worker</text><text x="135" y="190" class="s">RouteResult</text>
+  <rect x="285" y="110" width="215" height="76" class="node worker"/><text x="392" y="141" class="t">completion queue</text><text x="392" y="165" class="s">data channel</text>
+  <rect x="285" y="235" width="215" height="76" class="node worker"/><text x="392" y="266" class="t">eventfd</text><text x="392" y="290" class="s">wake-up channel</text>
+  <path d="M220 158 H285" class="a"/><path d="M220 188 C250 220 255 273 285 273" class="a"/>
+  <rect x="570" y="135" width="190" height="76" class="node reactor"/><text x="665" y="166" class="t">Reactor wakes</text><text x="665" y="190" class="s">drain eventfd</text>
+  <path d="M500 273 C535 273 535 173 570 173" class="a"/>
+  <rect x="830" y="110" width="310" height="126" class="node valid"/><text x="985" y="143" class="t">Validate completion</text><text x="985" y="173" class="s">fd still exists</text><text x="985" y="196" class="s">connection_id matches</text><text x="985" y="219" class="s">state == WaitingForWorker</text>
+  <path d="M760 173 H830" class="a"/>
+  <path d="M500 148 C650 80 760 80 830 130" class="a"/>
+  <rect x="830" y="285" width="310" height="76" class="node reactor"/><text x="985" y="316" class="t">applyRouteResult</text><text x="985" y="340" class="s">only Reactor mutates Connection</text>
+  <path d="M985 236 V285" class="a"/>
+</svg>
